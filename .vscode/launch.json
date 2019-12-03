@@ -12,7 +12,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\2-2\\intComp.js"
+            "program": "${workspaceFolder}\\3-1\\wiring.js"
         }
     ]
 }
