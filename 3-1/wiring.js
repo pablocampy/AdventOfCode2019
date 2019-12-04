@@ -43,15 +43,15 @@ const calcDistance = (x, y) => Math.abs(x) + Math.abs(y);
 
 const FindGridMatch = function(grid1, grid2)
 {
-    let startIndex = -100000;
+    let startIndex = 0;
     let x = startIndex;
     let y = startIndex;
     let shortDist = 90071992547401;
-    while(x < -startIndex)
+    while(-x < 1000)
     {
         yRow1 = grid1[x];
         yRow2 = grid2[x];
-        while(y < -startIndex)
+        while(-y < 1000)
         {
             if (yRow1 == undefined || yRow2 == undefined)
                 break;
@@ -66,14 +66,14 @@ const FindGridMatch = function(grid1, grid2)
                     break;
                 }
             }
-            y++;
-            // if (calcDistance(x,y)>shortDist)
-            //     break;
+            y--;
+            if (calcDistance(x,y)>shortDist)
+                break;
         }
-        x++;
+        x--;
         y=startIndex;
-        // if (calcDistance(x,y)>shortDist)
-        //     break;
+        if (calcDistance(x,y)>shortDist)
+            break;
     }
     return shortDist;
 }
