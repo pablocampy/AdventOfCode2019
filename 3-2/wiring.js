@@ -2,15 +2,6 @@ const fs = require('fs')
 const { promisify } = require('util')
 const readFileAsync = promisify(fs.readFile)
 
-let wireGridStarter = {
-    coord: {
-        x: 0,
-        y: 0
-    },
-    grid: [[]]
-}
-wireGridStarter.grid[0][0] = 0;
-
 const followInstruction = function(wireGrid, instruction)
 {
     let moveCounter = 0;
@@ -76,12 +67,10 @@ const moveSpiral = function(coord)
     }
 }
 
-const calcDistance = (coords) => Math.abs(coords.x) + Math.abs(coords.y);
-
-const FindGridMatch = function(grid1, grid2)
+const FindGridCrosses = function(grid1, grid2)
 {
+    let crossCoords = [];
     let coords = {x: 0, y: 0, ring:0, move:"D"};
-    let shortDist = Number.MAX_VALUE;
     while(true)
     {
         yRow1 = grid1[coords.x];
@@ -92,22 +81,15 @@ const FindGridMatch = function(grid1, grid2)
         let p2 = yRow2[coords.y];
         if (p1 == p2 && p1 == 1)
         {
-            let dist = calcDistance(coords);
-            if (dist < shortDist)
-            {
-                shortDist = dist;
-                break;
-            }
+            crossCoords.push({x: coords.x, y: coords.y});
         }
         moveSpiral(coords);
-        if (coords.ring > shortDist)
-            break;
     }
-    return shortDist;
+    return crossCoords;
 }
 
 const run = async () => {
-    let input = await readFileAsync('./3-1/input.txt', 'utf8');
+    let input = await readFileAsync('./3-1/test3.txt', 'utf8');
     let wireStrings = input.split('\n').map(i => i.split(','));
 
     let instructions = wireStrings.map(wireString =>
@@ -136,8 +118,8 @@ const run = async () => {
     instruction1.forEach( i => followInstruction(wireGrid1, i));
     instruction2.forEach( i => followInstruction(wireGrid2, i));
 
-    let shortDist = FindGridMatch(wireGrid1.grid, wireGrid2.grid);
-    console.log(shortDist);
+    let gridCrossCoords = FindGridCrosses(wireGrid1.grid, wireGrid2.grid);
+    console.log(gridCrossCoords[0]);
 }
-
+console.log("what");
 run()
