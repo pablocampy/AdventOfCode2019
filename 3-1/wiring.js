@@ -78,7 +78,7 @@ const moveSpiral = function(coord)
 
 const calcDistance = (coords) => Math.abs(coords.x) + Math.abs(coords.y);
 
-const FindGridMatch = function(grid1, grid2)
+const GetShortestDistance = function(grid1, grid2)
 {
     let coords = {x: 0, y: 0, ring:0, move:"D"};
     let shortDist = Number.MAX_VALUE;
@@ -136,7 +136,7 @@ const run = async () => {
     instruction1.forEach( i => followInstruction(wireGrid1, i));
     instruction2.forEach( i => followInstruction(wireGrid2, i));
 
-    let shortDist = FindGridMatch(wireGrid1.grid, wireGrid2.grid);
+    let shortDist = GetShortestDistance(wireGrid1.grid, wireGrid2.grid);
     console.log(shortDist);
 }
 
