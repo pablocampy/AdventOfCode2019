@@ -2,31 +2,42 @@ const fs = require('fs')
 const { promisify } = require('util')
 const readFileAsync = promisify(fs.readFile)
 
-const followInstruction = function(wireGrid, instruction)
-{
-    let moveCounter = 0;
-    while (moveCounter < instruction.distance)
+class WireGrid {
+    constructor()
     {
-        switch (instruction.direction)
+        this.coord = {
+            x: 0,
+            y: 0
+        };
+        
+        this.grid = [[]];
+        this.grid[0][0] = 0;
+    }
+    followInstruction(instruction){
+        let moveCounter = 0;
+        while (moveCounter < instruction.distance)
         {
-            case "L":
-                wireGrid.coord.x--;
-                break;
-            case "R":
-                wireGrid.coord.x++;
-                break;
-            case "U":
-                wireGrid.coord.y++;
-                break;
-            case "D":
-                wireGrid.coord.y--;
-                break;
+            switch (instruction.direction)
+            {
+                case "L":
+                    this.coord.x--;
+                    break;
+                case "R":
+                    this.coord.x++;
+                    break;
+                case "U":
+                    this.coord.y++;
+                    break;
+                case "D":
+                    this.coord.y--;
+                    break;
+            }
+            if (this.grid[this.coord.x] == undefined)
+                this.grid[this.coord.x] = [];
+    
+            this.grid[this.coord.x][this.coord.y] = 1;
+            moveCounter++;
         }
-        if (wireGrid.grid[wireGrid.coord.x] == undefined)
-            wireGrid.grid[wireGrid.coord.x] = [];
-
-        wireGrid.grid[wireGrid.coord.x][wireGrid.coord.y] = 1;
-        moveCounter++;
     }
 }
 
@@ -73,10 +84,10 @@ const FindGridCrosses = function(grid1, grid2)
     let coords = {x: 0, y: 0, ring:0, move:"D"};
     while(true)
     {
-        yRow1 = grid1[coords.x];
-        yRow2 = grid2[coords.x];
+        let yRow1 = grid1[coords.x];
+        let yRow2 = grid2[coords.x];
         if (yRow1 == undefined || yRow2 == undefined)
-            break;
+            continue;
         let p1 = yRow1[coords.y];
         let p2 = yRow2[coords.y];
         if (p1 == p2 && p1 == 1)
@@ -89,7 +100,7 @@ const FindGridCrosses = function(grid1, grid2)
 }
 
 const run = async () => {
-    let input = await readFileAsync('./3-1/test3.txt', 'utf8');
+    let input = await readFileAsync('./3-2/input.txt', 'utf8');
     let wireStrings = input.split('\n').map(i => i.split(','));
 
     let instructions = wireStrings.map(wireString =>
@@ -99,27 +110,14 @@ const run = async () => {
             return {"direction": direction, "distance": distance};
         })
     );
-    let wireGrid1 = {
-        coord: {
-            x: 0,
-            y: 0
-        },
-        grid: [[]]
-    }
-    let wireGrid2 = {
-        coord: {
-            x: 0,
-            y: 0
-        },
-        grid: [[]]
-    }
+    let wireGrid1 = new WireGrid();
+    let wireGrid2 = new WireGrid();
     let instruction1 = instructions[0];
     let instruction2 = instructions[1];
-    instruction1.forEach( i => followInstruction(wireGrid1, i));
-    instruction2.forEach( i => followInstruction(wireGrid2, i));
+    instruction1.forEach( i => wireGrid1.followInstruction(i));
+    instruction2.forEach( i => wireGrid2.followInstruction(i));
 
     let gridCrossCoords = FindGridCrosses(wireGrid1.grid, wireGrid2.grid);
     console.log(gridCrossCoords[0]);
 }
-console.log("what");
 run()

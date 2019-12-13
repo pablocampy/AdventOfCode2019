@@ -2,40 +2,42 @@ const fs = require('fs')
 const { promisify } = require('util')
 const readFileAsync = promisify(fs.readFile)
 
-let wireGridStarter = {
-    coord: {
-        x: 0,
-        y: 0
-    },
-    grid: [[]]
-}
-wireGridStarter.grid[0][0] = 0;
-
-const followInstruction = function(wireGrid, instruction)
-{
-    let moveCounter = 0;
-    while (moveCounter < instruction.distance)
+class WireGrid {
+    constructor()
     {
-        switch (instruction.direction)
+        this.coord = {
+            x: 0,
+            y: 0
+        };
+        
+        this.grid = [[]];
+        this.grid[0][0] = 0;
+    }
+    followInstruction(instruction){
+        let moveCounter = 0;
+        while (moveCounter < instruction.distance)
         {
-            case "L":
-                wireGrid.coord.x--;
-                break;
-            case "R":
-                wireGrid.coord.x++;
-                break;
-            case "U":
-                wireGrid.coord.y++;
-                break;
-            case "D":
-                wireGrid.coord.y--;
-                break;
+            switch (instruction.direction)
+            {
+                case "L":
+                    this.coord.x--;
+                    break;
+                case "R":
+                    this.coord.x++;
+                    break;
+                case "U":
+                    this.coord.y++;
+                    break;
+                case "D":
+                    this.coord.y--;
+                    break;
+            }
+            if (this.grid[this.coord.x] == undefined)
+                this.grid[this.coord.x] = [];
+    
+            this.grid[this.coord.x][this.coord.y] = 1;
+            moveCounter++;
         }
-        if (wireGrid.grid[wireGrid.coord.x] == undefined)
-            wireGrid.grid[wireGrid.coord.x] = [];
-
-        wireGrid.grid[wireGrid.coord.x][wireGrid.coord.y] = 1;
-        moveCounter++;
     }
 }
 
@@ -117,24 +119,12 @@ const run = async () => {
             return {"direction": direction, "distance": distance};
         })
     );
-    let wireGrid1 = {
-        coord: {
-            x: 0,
-            y: 0
-        },
-        grid: [[]]
-    }
-    let wireGrid2 = {
-        coord: {
-            x: 0,
-            y: 0
-        },
-        grid: [[]]
-    }
+    let wireGrid1 = new WireGrid();
+    let wireGrid2 = new WireGrid();
     let instruction1 = instructions[0];
     let instruction2 = instructions[1];
-    instruction1.forEach( i => followInstruction(wireGrid1, i));
-    instruction2.forEach( i => followInstruction(wireGrid2, i));
+    instruction1.forEach( i => wireGrid1.followInstruction(i));
+    instruction2.forEach( i => wireGrid2.followInstruction(i));
 
     let shortDist = GetShortestDistance(wireGrid1.grid, wireGrid2.grid);
     console.log(shortDist);
