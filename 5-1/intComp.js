@@ -3,6 +3,40 @@ const { promisify } = require('util')
 
 const readFileAsync = promisify(fs.readFile)
 
+const parameterTypeEnum = Object.freeze({"position": 1, "immediate": 2});
+
+class parameter {
+    contructor(mode, value) {
+        this.mode = mode;
+        this.value = value;
+    }
+}
+
+class instruction {
+    constructor(fullInstruction) {
+        let initialInput = fullInstruction.split(',').map(s => Number.parseInt(s)).slice();
+        this.opAndParameterCodes = initialInput[0];
+        this.parameter = this.readParameters(); 
+        this.opCode = readOpCode();
+    }
+
+    readParameters() {
+        let parCodes = this.opAndParameterCodes.slice(this.opAndParameterCodes.length - 2); //-2 from opCode in instruction
+        let parameters = [];
+        let parCodesCharArray = parCodes.split();
+        let i = 0;
+        while(i < parCodes.length) {
+            let mode = String.parseInt(parCodesCharArray[parCodes.length - i]);
+            let value = initialInput[i + 1]; // +1 from opAndParameterCodes
+            parameters.push(new parameter(mode, value));
+        }
+    }
+
+    readOpCode() {
+        return this.opAndParameterCodes.slice(-2);
+    }
+}
+
 class Program {
     constructor(initialMemoryState) {
         this.memoryState = initialMemoryState;
@@ -10,7 +44,8 @@ class Program {
 
     performOperation() {
         let index = 0;
-        let opCode = this.memoryState[index];
+        // let opCode = this.readOpCode(index);
+        
         while (opCode != 99) {
             let arg1Index = this.memoryState[index+1];
             let arg2Index = this.memoryState[index+2];
@@ -38,11 +73,14 @@ class Program {
             opCode = this.memoryState[index];
         }    
     }    
+
+
+
 }
 
 const run = async () => {
     let inputs = await readFileAsync('./2-2/input.txt', 'utf8');
-    let initialInput = inputs.split(',').map(s => Number.parseInt(s)).slice();
+    let 
     let program = new Program(initialInput);
     program.performOperation();
 
